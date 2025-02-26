@@ -6,10 +6,18 @@ This prevents them from being displayed correctly by the Sparkle update window i
 
 This repo provides a proxy which 'copies' the content of one of the update-notes html files, and then serves the content as a properly mime-typed html document.
 
-Alternative:
-  Another solution would be to host the html files on GitHub pages directly. Then they would be served with the right mime type. But that's awkward because then we'd have to commit the GitHub page of the `mac-mouse-fix` repo entirely to the `update-feed` branch. (I think, as of [Feb 2025])
+## How It Works
 
-Example usage:
+The proxy:
+1. Fetches the target HTML content
+2. Fetches and inlines any CSS and JS resources (to bypass MIME type restrictions)
+3. Serves the complete content with the correct `text/html` MIME type
+
+## Alternative Solution:
+
+Another solution would be to host the html files on GitHub pages directly. Then they would be served with the right mime type. But that's awkward because then we'd have to commit the GitHub page of the `mac-mouse-fix` repo entirely to the `update-feed` branch. (I think, as of [Feb 2025])
+
+## Example Usage:
 ```
 https://noah-nuebling.github.io/mmf-update-notes-proxy/?url=https://raw.githubusercontent.com/noah-nuebling/mac-mouse-fix/update-feed/update-notes/html/en/3.0.3.html
 ```

@@ -5,7 +5,6 @@
   <title>Mac Mouse Fix Update Notes</title>
   <script>
     document.addEventListener('DOMContentLoaded', async function() {
-      // Get the URL from query parameter
       const urlParams = new URLSearchParams(window.location.search);
       const targetUrl = urlParams.get('url');
       
@@ -15,15 +14,51 @@
       }
       
       try {
-        // Fetch the content from the provided URL
+        // Step 1: Fetch the HTML content
         const response = await fetch(targetUrl);
-        const html = await response.text();
+        const htmlText = await response.text();
         
-        // Replace the current document's content with the fetched content
-        // This preserves all HTML structure including head elements
-        document.open();
-        document.write(html);
-        document.close();
+        // Step 2: Parse HTML to DOM
+        const parser = new DOMParser();
+        const htmlDoc = parser.parseFromString(htmlText, 'text/html');
+        
+        // Step 3: Find and process external resources
+        const cssLinks = htmlDoc.querySelectorAll('link[rel="stylesheet"]');
+        const scriptTags = htmlDoc.querySelectorAll('script[src]');
+        
+        // Step 4: Replace CSS links with inline styles
+        for (const link of cssLinks) {
+          const cssUrl = link.getAttribute('href');
+          try {
+            const cssResponse = await fetch(cssUrl);
+            const cssText = await cssResponse.text();
+            
+            // Replace link with inline style
+            const styleTag = document.createElement('style');
+            styleTag.textContent = cssText;
+            link.parentNode.replaceChild(styleTag, link);
+          } catch (err) {
+            console.error('Failed to load CSS:', cssUrl, err);
+          }
+        }
+        
+        // Step 5: Replace script sources with inline scripts
+        for (const script of scriptTags) {
+          const scriptUrl = script.getAttribute('src');
+          try {
+            const scriptResponse = await fetch(scriptUrl);
+            const scriptText = await scriptResponse.text();
+            
+            // Replace src with inline content
+            script.removeAttribute('src');
+            script.textContent = scriptText;
+          } catch (err) {
+            console.error('Failed to load script:', scriptUrl, err);
+          }
+        }
+        
+        // Step 6: Replace our document with the modified HTML
+        document.documentElement.innerHTML = htmlDoc.documentElement.innerHTML;
       } catch (error) {
         document.body.innerHTML = '<h1>Error loading content</h1><p>' + error.message + '</p>';
       }

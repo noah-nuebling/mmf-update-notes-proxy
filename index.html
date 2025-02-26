@@ -15,41 +15,15 @@
       }
       
       try {
-        // Fetch the target HTML content
+        // Fetch the content from the provided URL
         const response = await fetch(targetUrl);
         const html = await response.text();
         
-        // Parse the HTML
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        
-        // Apply title
-        if (doc.title) {
-          document.title = doc.title;
-        }
-        
-        // Copy head elements (except the script we're currently running)
-        const ourScript = document.querySelector('script');
-        const headElements = Array.from(doc.head.children);
-        
-        // Clear current head except our script
-        while (document.head.firstChild) {
-          if (document.head.firstChild === ourScript) {
-            const temp = document.head.firstChild;
-            document.head.removeChild(temp);
-            headElements.push(temp); // We'll add it back at the end
-          } else {
-            document.head.removeChild(document.head.firstChild);
-          }
-        }
-        
-        // Add all head elements
-        headElements.forEach(el => {
-          document.head.appendChild(el.cloneNode(true));
-        });
-        
-        // Replace body content
-        document.body.innerHTML = doc.body.innerHTML;
+        // Replace the current document's content with the fetched content
+        // This preserves all HTML structure including head elements
+        document.open();
+        document.write(html);
+        document.close();
       } catch (error) {
         document.body.innerHTML = '<h1>Error loading content</h1><p>' + error.message + '</p>';
       }

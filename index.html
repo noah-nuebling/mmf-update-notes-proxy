@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Mac Mouse Fix Update Notes</title>
+  <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+      // Get the URL from query parameter
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetUrl = urlParams.get('url');
+      
+      if (!targetUrl) {
+        document.body.innerHTML = '<h1>Error: No URL specified</h1>';
+        return;
+      }
+      
+      try {
+        // Fetch the target HTML content
+        const response = await fetch(targetUrl);
+        const html = await response.text();
+        
+        // Parse the HTML
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        
+        // Apply title
+        if (doc.title) {
+          document.title = doc.title;
+        }
+        
+        // Copy head elements (except the script we're currently running)
+        const ourScript = document.querySelector('script');
+        const headElements = Array.from(doc.head.children);
+        
+        // Clear current head except our script
+        while (document.head.firstChild) {
+          if (document.head.firstChild === ourScript) {
+            const temp = document.head.firstChild;
+            document.head.removeChild(temp);
+            headElements.push(temp); // We'll add it back at the end
+          } else {
+            document.head.removeChild(document.head.firstChild);
+          }
+        }
+        
+        // Add all head elements
+        headElements.forEach(el => {
+          document.head.appendChild(el.cloneNode(true));
+        });
+        
+        // Replace body content
+        document.body.innerHTML = doc.body.innerHTML;
+      } catch (error) {
+        document.body.innerHTML = '<h1>Error loading content</h1><p>' + error.message + '</p>';
+      }
+    });
+  </script>
+</head>
+<body>
+  <div>Loading update notes...</div>
+</body>
+</html>

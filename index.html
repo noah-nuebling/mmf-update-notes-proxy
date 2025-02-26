@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <title>Mac Mouse Fix Update Notes</title>
   <script>
-    document.addEventListener('DOMContentLoaded', async function() {
       // Get the URL from query parameter
       const urlParams = new URLSearchParams(window.location.search);
       const targetUrl = urlParams.get('url');
@@ -27,7 +26,6 @@
       } catch (error) {
         document.body.innerHTML = '<h1>Error loading content</h1><p>' + error.message + '</p>';
       }
-    });
   </script>
 </head>
 <body>

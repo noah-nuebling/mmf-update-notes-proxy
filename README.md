@@ -1,3 +1,7 @@
+*Don't use this, it requires javascript, which the update window in older MMF versions doesn't support. Use githack.com as a proxy instead.*
+
+---
+
 # mmf-update-notes-proxy
 
 [Feb 2025] 
